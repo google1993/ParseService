@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ParseService.Elements
+namespace ParseServiceNC2.DB
 {
-    class Process
+    [Table("PechStats")]
+    class PechStatus
     {
-
+        [Key]
         public int ProcessId { get; set; }
         public int? PrefixPlav { get; set; }
         public int? NomerPlav { get; set; }
@@ -51,10 +50,12 @@ namespace ParseService.Elements
                     NomerPlav = null;
             }
         }
-
-        public string Splav { get; set; }
-        public string Ukazanie { get; set; }
-        public string Contract { get; set; }
+        public int? SplavId { get; set; }
+        public virtual Splavy Splav { get; set; }
+        public int? UkazanieId { get; set; }
+        public virtual Ukazaniya Ukazanie { get; set; }
+        public int? ContractId { get; set; }
+        public virtual Contracts Contract { get; set; }
 
         public int NaborOg { get; set; }
         public int NaborPer { get; set; }
@@ -96,9 +97,8 @@ namespace ParseService.Elements
         }
 
         public int ElectVes { get; set; }
-        public string Operation { get; set; }
-        public bool OperFlag { get; set; }
-
+        public int OperationId { get; set; }
+        public virtual Operations Operation { get; set; }
         public DateTime Start { get; set; }
 
         public DateTime? EndTeor { get; set; }
@@ -139,26 +139,92 @@ namespace ParseService.Elements
             }
         }
 
-        public void ChangeParam(Process b)
+        public void ChangeParam(PechStatus b)
         {
             this.PrefixPlav = b.PrefixPlav;
             this.NomerPlav = b.NomerPlav;
             this.Pech = b.Pech;
-            this.Splav = b.Splav;
-            this.Ukazanie = b.Ukazanie;
-            this.Contract = b.Contract;
+            this.SplavId = b.SplavId;
+            this.UkazanieId = b.UkazanieId;
+            this.ContractId = b.ContractId;
             this.NaborOg = b.NaborOg;
             this.NaborPer = b.NaborPer;
             this.ComplectNum = b.ComplectNum;
             this.ComplectIzl = b.ComplectIzl;
             this.ComplectDiam = b.ComplectDiam;
             this.ElectVes = b.ElectVes;
-            this.Operation = b.Operation;
-            this.OperFlag = b.OperFlag;
+            this.OperationId = b.OperationId;
             this.Start = b.Start;
             this.EndTeor = b.EndTeor;
             this.EndFact = b.EndFact;
             this.Prostoy = b.Prostoy;
         }
     }
+    class Contracts {
+        [Key]
+        public int ContractId { get; set; }
+        public string Contract { get; set; }
+        public virtual ICollection<PechStatus> PechStatuses { get; set; }
+        public Contracts()
+        {
+            PechStatuses = new List<PechStatus>();
+        }
+        public Contracts(string a)
+        {
+            PechStatuses = new List<PechStatus>();
+            Contract = a;
+        }
+
+    }
+    class Operations {
+        [Key]
+        public int OperationId { get; set; }
+        public string Operation { get; set; }
+        public virtual ICollection<PechStatus> PechStatuses { get; set; }
+        public Operations()
+        {
+            PechStatuses = new List<PechStatus>();
+        }
+        public Operations(string a)
+        {
+            PechStatuses = new List<PechStatus>();
+            Operation = a;
+        }
+
+    }
+    class Splavy {
+        [Key]
+        public int SplavId { get; set; }
+        public string Splav { get; set; }
+        public virtual ICollection<PechStatus> PechStatuses { get; set; }
+        public Splavy()
+        {
+            PechStatuses = new List<PechStatus>();
+        }
+        public Splavy(string a)
+        {
+            PechStatuses = new List<PechStatus>();
+            Splav = a;
+        }
+    }
+    class Ukazaniya {
+        [Key]
+        public int UkazanieId { get; set; }
+        public string Ukazanie { get; set; }
+        public virtual ICollection<PechStatus> PechStatuses { get; set; }
+        public Ukazaniya()
+        {
+            PechStatuses = new List<PechStatus>();
+        }
+        public Ukazaniya(string a)
+        {
+            PechStatuses = new List<PechStatus>();
+            Ukazanie = a;
+        }
+
+    }
 }
+
+	
+	
+	
