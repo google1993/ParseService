@@ -22,7 +22,6 @@ namespace ParseServiceNC2
         static private Level logLevel = Level.None;
 
         static private string parsePage;
-        static private string parseCharset = "";
         static private bool parseProxy = false;
         static private string parseProxyAddress;
         static private string parseProxyUsername;
@@ -34,7 +33,6 @@ namespace ParseServiceNC2
         static private string sendProxyAddress;
         static private string sendProxyUsername;
         static private string sendProxyPassword;
-
 
         #region GetParams
         static public int Interval { get { return interval <= 0 ? 60000 : (int)interval ; } }
@@ -50,6 +48,7 @@ namespace ParseServiceNC2
                     Path.Combine(dirLog, "Error.log") : "Error.log"; } }
         static public Level LogLevel { get { return logLevel; } }
         static public Sql SqlProvider { get { return sqlProvider; } }
+        static public string ConnectionString { get { return connectionString; } }
         static public bool SendProxy { get { return sendProxy; } }
         static public string SendProxyAddress { get { return sendProxyAddress; } }
         static public string SendProxyUsername { get { return sendProxyUsername; } }
@@ -58,8 +57,6 @@ namespace ParseServiceNC2
         static public string ParseProxyAddress { get { return parseProxyAddress; } }
         static public string ParseProxyUsername { get { return parseProxyUsername; } }
         static public string ParseProxyPassword { get { return parseProxyPassword; } }
-        static public string ParseCharset { get { return parseCharset; } }
-
         #endregion
 
         static public bool GetConfig()
@@ -308,6 +305,7 @@ namespace ParseServiceNC2
             LogClass.CreateInfoLog("Read config: OK");
             return true;
         }
+
         static public void GetDefaultConfig()
         {
             interval = 60000;
@@ -319,58 +317,15 @@ namespace ParseServiceNC2
             logLevel = Level.None;
             sendData = false;
         }
+
         static public bool TestConfig()
         {
             LogClass.CreateDebugLog("Test Connect to DB.");
-            try
-            {
-                using (MyDBContext db = new MyDBContext(connectionString, sqlProvider))
-                {
-                    var result = (from a in db.PechStatus
-                                  where a.ProcessId == 1
-                                  select a).ToList();
-                }
-            }
-            catch(Exception e)
-            {
-                LogClass.CreateErrorLog("DataBase Error: " + e.Message);
-                LogClass.CreateErrorLog("Connection string: " + connectionString);
+            if (!DatabaseClass.TestDataBase())
                 return false;
-            }
-
             LogClass.CreateDebugLog("Test Connect to parse page.");
-            try
-            {
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                HttpClient client = ConnectionClass.CreateGetHttpConnect();
-                HttpResponseMessage response = client.GetAsync(ParsePage).Result;
-                string charset = response.Content.ReadAsStringAsync().Result;
-                Match m = Regex.Match(charset, "<meta.*?charset=([^\"']+)");
-                if (m.Success)
-                    charset = m.Groups[1].Value.ToLower();
-                else
-                    charset = "utf-8";
-                parseCharset = charset != "ibm866" ? charset : "cp866";
-                StreamReader readStream = new StreamReader(
-                    client.GetStreamAsync(ParsePage).Result,
-                    Encoding.GetEncoding(parseCharset));
-                string result = "";
-                while (!readStream.EndOfStream)
-                    result += readStream.ReadLine();
-                readStream.Close();
-                m = Regex.Match(result, @"<title>\s*(.+?)\s*</title>");
-                if (m.Success)
-                    result = m.Groups[1].Value;
-                else
-                    result = "";
-                LogClass.CreateDebugLog("Parse HTML title: " + result);
-            }
-            catch (Exception e)
-            {
-                LogClass.CreateErrorLog("Parse HTML Error: " + e.Message);
+            if (!HtmlClass.TestHtml())
                 return false;
-            }
-
             LogClass.CreateInfoLog("Test config: OK");
             return true;
         }

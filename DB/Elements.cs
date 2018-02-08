@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ParseServiceNC2.DB
 {
-    [Table("PechStats")]
     class PechStatus
     {
         [Key]
@@ -120,45 +119,6 @@ namespace ParseServiceNC2.DB
         }
 
         public DateTime? EndFact { get; set; }
-
-        public DateTime? Prostoy { get; set; }
-        [NotMapped]
-        public string ProstoyStr
-        {
-            set
-            {
-                if (value == "-")
-                {
-                    Prostoy = null;
-                    return;
-                }
-                int.TryParse(value.Substring(0, value.IndexOf(':')), out int hour);
-                int.TryParse(value.Substring(value.IndexOf(':') + 1), out int min);
-                TimeSpan t = new TimeSpan(hour, min, 0);
-                Prostoy = DateTime.Now.Subtract(t);
-            }
-        }
-
-        public void ChangeParam(PechStatus b)
-        {
-            this.PrefixPlav = b.PrefixPlav;
-            this.NomerPlav = b.NomerPlav;
-            this.Pech = b.Pech;
-            this.SplavId = b.SplavId;
-            this.UkazanieId = b.UkazanieId;
-            this.ContractId = b.ContractId;
-            this.NaborOg = b.NaborOg;
-            this.NaborPer = b.NaborPer;
-            this.ComplectNum = b.ComplectNum;
-            this.ComplectIzl = b.ComplectIzl;
-            this.ComplectDiam = b.ComplectDiam;
-            this.ElectVes = b.ElectVes;
-            this.OperationId = b.OperationId;
-            this.Start = b.Start;
-            this.EndTeor = b.EndTeor;
-            this.EndFact = b.EndFact;
-            this.Prostoy = b.Prostoy;
-        }
     }
     class Contracts {
         [Key]
