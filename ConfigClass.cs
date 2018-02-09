@@ -49,6 +49,9 @@ namespace ParseServiceNC2
         static public Level LogLevel { get { return logLevel; } }
         static public Sql SqlProvider { get { return sqlProvider; } }
         static public string ConnectionString { get { return connectionString; } }
+        static public bool SendData { get { return sendData; } }
+        static public string SendAddress { get { return string.IsNullOrEmpty(sendAddress) ?
+                    "http://localhost/" : sendAddress; } }
         static public bool SendProxy { get { return sendProxy; } }
         static public string SendProxyAddress { get { return sendProxyAddress; } }
         static public string SendProxyUsername { get { return sendProxyUsername; } }

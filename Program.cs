@@ -54,6 +54,12 @@ namespace ParseServiceNC2
                 }
                 DatabaseClass.UdateStatus(update);
                 DatabaseClass.AddStatus(writeNew);
+                if (ConfigClass.SendData) {
+                    lastStats = new List<PechStatus>();
+                    DatabaseClass.GetLastStatus(out lastStats);
+                    HtmlClass.SendPechStats(lastStats);
+                }
+
             }
         }
     }

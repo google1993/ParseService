@@ -49,7 +49,7 @@ namespace ParseServiceNC2
             client = ConfigClass.SendProxy ? new HttpClient(httpClientHandler) : new HttpClient();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.UserAgent.Clear();
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("test-api", "1"));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("ParseProg", "1.2"));
             return client;
         }
         static public HttpClient CreateGetHttpConnect()

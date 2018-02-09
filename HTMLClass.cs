@@ -1,4 +1,5 @@
-﻿using ParseServiceNC2.DB;
+﻿using Newtonsoft.Json.Linq;
+using ParseServiceNC2.DB;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -98,39 +99,39 @@ namespace ParseServiceNC2
             }
             return true;
         }
-        /*
-        static async private Task SendPechStats(List<PechStatus> a)
+        static public bool SendPechStats(List<PechStatus> pechstat)
         {
             try
             {
                 JArray jPechStats = new JArray();
-                foreach (var pechstat in a)
+                foreach (var a in pechstat)
                 {
                     JObject o = new JObject{
-                            { "Plavka", pechstat.Plavka },
-                            { "Splav", pechstat.Splav.Splav },
-                            { "Ukazanie", pechstat.Ukazanie.Ukazanie },
-                            { "Contract", pechstat.Contract.Contract },
-                            { "Nabor", pechstat.Nabor },
-                            { "Complect", pechstat.Complect },
-                            { "ElectVes", pechstat.ElectVes },
-                            { "Operation", pechstat.Operation.Operation },
-                            { "Start", pechstat.Start },
-                            { "EndTeor", pechstat.EndTeor },
-                            { "Prostoy", pechstat.Prostoy }
+                            { "Plavka", a.Plavka },
+                            { "Splav", a.Splav != null ? a.Splav.Splav : "-" },
+                            { "Ukazanie", a.Ukazanie != null ? a.Ukazanie.Ukazanie : "-" },
+                            { "Contract", a.Contract != null ? a.Contract.Contract : "-" },
+                            { "Nabor", a.Nabor },
+                            { "Complect", a.Complect },
+                            { "ElectVes", a.ElectVes },
+                            { "Operation", a.Operation.Operation },
+                            { "Start", a.Start },
+                            { "EndTeor", a.EndTeor.HasValue ? a.EndTeor.ToString() : "-" },
                         };
                     jPechStats.Add(o);
                 }
-                HttpClient client = new Connect().CreateConnect(false);
+                HttpClient client = ConnectionClass.CreateSendJSONConnect();
                 var httpContent = new StringContent(jPechStats.ToString(),
                     Encoding.UTF8, "application/json");
-                HttpResponseMessage response =
-                    await client.PostAsync(@"http://127.0.0.1:5011/setinfo", httpContent);
-                Console.WriteLine(response.StatusCode.ToString());
+                HttpResponseMessage response = client.PostAsync(ConfigClass.SendAddress, httpContent).GetAwaiter().GetResult();
+                //LogClass.CreateInfoLog(response.StatusCode.ToString());
             }
-            catch
+            catch(Exception e)
             {
+                LogClass.CreateErrorLog("Can't send data to remote server: " + e.Message);
+                return false;
             }
-        }*/
+            return true;
+        }
     }
 }

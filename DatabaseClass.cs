@@ -23,11 +23,12 @@ namespace ParseServiceNC2
                     var innerQuery = (from a in db.PechStatus
                                       group a by a.Pech into b
                                       select b.Max(x => x.ProcessId)).ToList();
+
                     var result = (from a in db.PechStatus
-                                  //.Include("Operations").Include("Contracts").Include("Splavy").Include("Ukazaniya")
                                   where innerQuery.Contains(a.ProcessId)
                                   orderby a.Pech
-                                  select a).ToList();
+                                  select a).Include(a => a.Operation).Include(a => a.Contract)
+                                  .Include(a => a.Splav).Include(a => a.Ukazanie).ToList();
                     lastStatus = result;
                 }
             }
